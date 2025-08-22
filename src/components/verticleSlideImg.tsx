@@ -12,7 +12,7 @@ const verticleSlideImg = () => {
     const config = {
         gap: 0.08,
         speed: 0.3,
-        arcRadius: 500
+        arcRadius: 200
     }
 
     const spotlightItems = [
@@ -35,7 +35,7 @@ const verticleSlideImg = () => {
         gsap.ticker.add((time) => lenis.raf(time * 1000));
         gsap.ticker.lagSmoothing(0);
 
-        const titlesContainer = document.querySelector('.spotlight-title') as HTMLElement;
+        const titlesContainer = document.querySelector('.spotlight-titles') as HTMLElement;
         const imagesContainer = document.querySelector('.spotlight-images') as HTMLElement;
         const spotlightHeader = document.querySelector('.spotlight-header') as HTMLElement;
         const titlesContainerElement = document.querySelector(
@@ -45,7 +45,7 @@ const verticleSlideImg = () => {
         const introTextElements = document.querySelectorAll(
             ".spotlight-intro-text"
         ) as NodeListOf<HTMLElement>;
-        const imagesElements = [];
+        const imagesElements: HTMLElement[] = [];
 
         spotlightItems.forEach((item, index) => {
             const titleElement = document.createElement('h1');
@@ -57,7 +57,7 @@ const verticleSlideImg = () => {
             imgWrapper.className = 'spotlight-img'
             const imgElement = document.createElement("img");
             imgElement.src = item.img;
-            imgElement.alt = item.name;
+            imgElement.alt = '';
             imgWrapper.appendChild(imgElement);
             imagesContainer.appendChild(imgWrapper);
             imagesElements.push(imgWrapper);
@@ -66,9 +66,9 @@ const verticleSlideImg = () => {
         const titleElements = titlesContainer.querySelectorAll('h1');
         let currentActiveIndex = 0;
 
-        const containerWidth = window.innerWidth * 0.3;
+        const containerWidth = window.innerWidth * 0.5;
         const containerHeight = window.innerHeight;
-        const arcStartX = containerWidth - 220;
+        const arcStartX = 100 + containerWidth; // Position images at far left
         const arcStartY = -200;
         const arcEndY = containerHeight + 200;
         const arcControlPointX = arcStartX + config.arcRadius;
@@ -97,7 +97,138 @@ const verticleSlideImg = () => {
             return (overallProgress - startTime) / config.speed;
         }
 
-        imagesElements.forEach((img) => (gsap.set(img, {opacity: 0})))
+        imagesElements.forEach((img) => (gsap.set(img, { opacity: 0 })));
+
+        ScrollTrigger.create({
+            trigger: ".spotlight",
+            start: "top top",
+            end: `+=${window.innerHeight * 10}px`,
+            pin: true,
+            pinSpacing: true,
+            scrub: 1,
+            onUpdate: (self) => {
+                const progress = self.progress;
+
+                if (progress <= 0.2) {
+                    const animationProgress = progress / 0.2;
+
+                    const moveDistance = window.innerWidth * 0.6;
+
+                    gsap.set(introTextElements[0], {
+                        x: -animationProgress * moveDistance,
+                    });
+                    gsap.set(introTextElements[1], {
+                        x: animationProgress * moveDistance,
+                    });
+                    gsap.set(introTextElements[0], { opacity: 1 });
+                    gsap.set(introTextElements[1], { opacity: 1 });
+
+                    gsap.set(".spotlight-bg-img", {
+                        transform: `scale(${animationProgress})`,
+                    });
+                    gsap.set(".spotlight-bg-img img", {
+                        transform: `scale(${1.5 - animationProgress * 0.5})`,
+                    });
+
+                    imagesElements.forEach((img) => gsap.set(img, { opacity: 0 }));
+                    spotlightHeader.style.opacity = "0";
+                    gsap.set(titlesContainerElement, {
+                        "--before-opacity": "0",
+                        "--after-opacity": "0"
+                    });
+                }
+
+                else if ( progress > 0.2 && progress <= 0.25 ){
+                    gsap.set(".spotlight-bg-img", { transform: "scale(1)" });
+                    gsap.set(".spotlight-bg-img img", { transform: "scale(1)" });
+
+                    gsap.set(introTextElements[0], { opacity: 0 });
+                    gsap.set(introTextElements[1], { opacity: 0 });
+
+                    imagesElements.forEach((img)=> gsap.set(img, { opacity: 0 }));
+                    spotlightHeader.style.opacity = "1";
+                    gsap.set(titlesContainerElement, {
+                        "--before-opacity": "1",
+                        "--after-opacity": "1",
+                    });
+                }
+
+                else if ( progress > 0.25 && progress <= 0.95 ) {
+                    gsap.set(".spotlight-bg-img", { transform: "scale(1)" });
+                    gsap.set(".spotlight-bg-img img", { transform: "scale(1)" });
+
+                    gsap.set(introTextElements[0], { opacity: 0 });
+                    gsap.set(introTextElements[1], { opacity: 0 });
+
+                    spotlightHeader.style.opacity = "1";
+                    gsap.set(titlesContainerElement, {
+                        "--before-opacity": "1",
+                        "--after-opacity": "1",
+                    });
+
+                    const switchProgress = ( progress - 0.25 ) / 0.7;
+                    const viewportHeight = window.innerHeight;
+                    const titlesContainerHeight = titlesContainer.scrollHeight;
+                    const startPosition = viewportHeight;
+                    const targetPosition = -titlesContainerHeight;
+                    const totalDistance = startPosition - targetPosition;
+                    const currentY = startPosition - switchProgress * totalDistance;
+
+                    gsap.set(".spotlight-titles", {
+                        transform: `translateY(${currentY}px)`,
+                    });
+
+                    imagesElements.forEach((img, idx) => {
+                        const imageProgress = getImgProgressState(idx, switchProgress);
+
+                        if (imageProgress < 0 || imageProgress > 1) {
+                            gsap.set(img, { opacity: 0 });
+                        } else {
+                            const pos = getBezierPosition(imageProgress);
+                            gsap.set(img, {
+                                x: pos.x,
+                                y: pos.y - 75,
+                                opacity: 1
+                            });
+                        }
+                    });
+
+                    const viewportMiddle = viewportHeight / 2;
+                    let closesetIndex = 0;
+                    let closestDistance = Infinity;
+
+                    titleElements.forEach((title, index) => {
+                        const titleRect = title.getBoundingClientRect();
+                        const titleCenter = titleRect.top + titleRect.height / 2;
+                        const distanceFromCenter = Math.abs(titleCenter - viewportMiddle);
+
+                        if ( distanceFromCenter < closestDistance) {
+                            closestDistance = distanceFromCenter;
+                            closesetIndex = index;
+                        }
+                    });
+
+                    if ( closesetIndex !== currentActiveIndex) {
+                        if ( titleElements[currentActiveIndex]) {
+                            titleElements[currentActiveIndex].style.opacity = "0.25";
+                        }
+                        titleElements[closesetIndex].style.opacity = "1";
+                        const bgImgElement = document.querySelector(".spotlight-bg-img img") as HTMLImageElement;
+                        if (bgImgElement) {
+                            bgImgElement.src = spotlightItems[closesetIndex].img;
+                        }
+                        currentActiveIndex = closesetIndex;
+                    }
+                } else if ( progress > 0.95) {
+                    spotlightHeader.style.opacity = "0";
+                    gsap.set(titlesContainerElement, {
+                        "--before-opacity": "0",
+                        "--after-opacity": "0",
+                    })
+                }
+            }
+
+        })
 
     })
 
@@ -119,8 +250,8 @@ const verticleSlideImg = () => {
             <div className='spotlight-bg-img absolute w-[100%] h-[100%] overflow-hidden will-change-transform'>
                 <img src="images/img_1.jpg" alt="" />
             </div>
-            <div className="spotlight-title-container absolute top-0 left-15vw w-[100%] h-[100%] overflow-hidden ">
-                <div className="spotlight-title"></div>
+            <div className="spotlight-titles-container absolute top-0 left-[300px] w-[100%] h-[100%] overflow-hidden ">
+                <div className="spotlight-titles"></div>
             </div>
             
             <div className="spotlight-images"></div>
