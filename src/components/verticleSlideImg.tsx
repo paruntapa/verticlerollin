@@ -76,16 +76,28 @@ const verticleSlideImg = () => {
 
 
         function getBezierPosition(t: number){
-            const x =
+        const x =
             (1 - t) * (1 - t) * arcStartX +
             2 * (1 - t ) * t * arcControlPointX +
             t * t * arcStartX;
-            const y =
+        const y =
             (1 - t) * (1 - t) * arcStartY +
             2 * (1 - t) * t * arcControlPointY +
             t * t * arcEndY;
-            return { x, y};
+        return { x, y};
         }
+
+        function getImgProgressState(index: number, overallProgress: number) {
+            const startTime = index * config.gap;
+            const endTime = startTime + config.speed;
+
+            if (overallProgress < startTime) return - 1;
+            if (overallProgress > endTime) return 2;
+
+            return (overallProgress - startTime) / config.speed;
+        }
+
+        imagesElements.forEach((img) => (gsap.set(img, {opacity: 0})))
 
     })
 
