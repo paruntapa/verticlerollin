@@ -16,12 +16,12 @@ const verticleSlideImg = () => {
     }
 
     const spotlightItems = [
-        { name: 'Silent Arc', img: 'images/img_1.jpg'},
-        { name: 'Bloom25', img: 'images/img_2.jpg'},
-        { name: 'Glass Fade', img: 'images/img_3.jpg'},
-        { name: 'Echo g', img: 'images/img_4.jpg'},
+        { name: 'Eminem', img: 'images/img_1.jpg'},
+        { name: 'Messi', img: 'images/img_2.jpg'},
+        { name: 'Choso', img: 'images/img_3.jpg'},
+        { name: 'Silent Voice', img: 'images/img_4.jpg'},
         { name: 'Velvet Loop', img: 'images/img_5.jpg'},
-        { name: 'Field Two', img: 'images/img_6.jpg'},
+        { name: 'Fairy Tail', img: 'images/img_6.jpg'},
         // { name: 'Stillroom', img: 'images/img_7.jpg'},
         // { name: 'Ghostline', img: 'images/img_8.jpg'},
         // { name: 'Mono 73', img: 'images/img_9.jpg'},
@@ -250,7 +250,7 @@ const verticleSlideImg = () => {
             <div className='spotlight-bg-img absolute w-[100%] h-[100%] overflow-hidden will-change-transform'>
                 <img src="images/img_1.jpg" alt="" />
             </div>
-            <div className="spotlight-titles-container absolute top-0 left-[300px] w-[100%] h-[100%] overflow-hidden ">
+            <div className="spotlight-titles-container absolute  left-[300px] w-[100%] h-[100%] overflow-hidden ">
                 <div className="spotlight-titles"></div>
             </div>
             

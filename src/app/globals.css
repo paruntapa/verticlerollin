@@ -86,16 +86,16 @@ section {
 .spotlight-titles-container::after {
     bottom: 0;
     left: 0;
-    transform: rotate(45deg) translateX(-7rem);
+    transform: rotate(45deg) translate(-7rem);
     opacity: var(--after-opacity);
 }
 
 .spotlight-titles {
-    position: absolute;
-    top: 15%;
-    left: 75%;
+    position: relative;
+    left: 15%;
     transform: translateY(100%);
     width: 75%;
+    height: 100%;
     flex-direction: column;
     gap: 5rem;
     height: 100%;
@@ -112,7 +112,8 @@ section {
     position: absolute;
     top: 0;
     left: 0;
-    width: 300px;
+    width: 50%;
+    min-width: 300px;
     height: 100%;
     z-index: 1;
     pointer-events: none;
@@ -126,7 +127,7 @@ section {
 }
 
 .spotlight-header {
-    position: relative;
+    position: absolute;
     top: 50%;
     left: 10%;
     transform: translateY(-50%);
