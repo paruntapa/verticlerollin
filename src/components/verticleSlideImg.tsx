@@ -68,7 +68,7 @@ const verticleSlideImg = () => {
 
         const containerWidth = window.innerWidth * 0.5;
         const containerHeight = window.innerHeight;
-        const arcStartX = 100 + containerWidth; // Position images at far left
+        const arcStartX = 100 + containerWidth;
         const arcStartY = -200;
         const arcEndY = containerHeight + 200;
         const arcControlPointX = arcStartX + config.arcRadius;
